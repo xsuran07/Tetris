@@ -3,6 +3,8 @@
 import pygame
 import objects as ob
 import constants as cons
+import text
+import picker
 
 pygame.init()
 
@@ -12,21 +14,20 @@ class Game:
 		pygame.display.set_caption("Tetris")
 		self.running = True
 		self.clock = pygame.time.Clock()
+		self.texts = []
 		self.scores = [0, 0, 1]
 		self.font_info = pygame.font.SysFont("ubuntumono", cons.FONT_INFO_SIZE) 
-		self.active = ob.Shape5(4, 5)
+		self.picker = picker.Picker()
+		self.active = self.picker.pick()
 
-	## @breif Function for displaying text
-	# @param text Text to be displayed
-	# @param color Color of the text
-	# @param pos Position of the text
-	# @param padding Flag to determine if there will be padding arround text 
-	def draw_text(self, text, color, pos, padding=False):
-		if(padding):
-			pygame.draw.rect(self.screen, cons.BLACK, (pos[0], pos[1], cons.OFFSET, cons.FONT_INFO_SIZE))
-
-		tmp = self.font_info.render(text, True, color)
-		self.screen.blit(tmp, (pos[0] + cons.WIDTH // 8 - len(text)*cons.FONT_INFO_SIZE//4, pos[1]))
+		#initialize all texts
+		left_banner = ["SCORE", "LINES", "LEVEL"]
+		right_banner = ["FIRST", "SECOND", "THIRD"]
+		
+		for i in range(3):
+			self.texts.append(text.Text(left_banner[i], 0, i*cons.HEIGHT // 3, cons.WHITE, self.screen, True))
+			self.texts.append(text.Text(right_banner[i], cons.WIDTH - cons.OFFSET, i*cons.HEIGHT // 3, cons.WHITE, self.screen, True))
+			self.texts.append(text.Text(str(self.scores[i]), 0, i*cons.HEIGHT // 3 + 2*cons.FONT_INFO_SIZE, cons.BLACK, self.screen, False))
 
 	def draw_block(self, x, y, color1, color2):
 		x_cor = cons.OFFSET + x*cons.SQUARE
@@ -39,9 +40,6 @@ class Game:
 
 	## @breif Draws whole background
 	def draw_background(self):
-		left_banner = ["SCORE", "LINES", "LEVEL"]
-		right_banner = ["FIRST", "SECOND", "THIRD"]
-		
 		pygame.draw.rect(self.screen, cons.BLUE, (0, 0, cons.OFFSET, cons.HEIGHT))
 		pygame.draw.rect(self.screen, cons.BLUE, (cons.WIDTH - cons.OFFSET, 0, cons.OFFSET, cons.HEIGHT))
 
@@ -49,10 +47,8 @@ class Game:
 			for j in range(10):
 				self.draw_block(j, i, cons.WHITE, cons.BLACK)
 
-		for i in range(3):
-			self.draw_text(left_banner[i], cons.WHITE, (0, i*cons.HEIGHT // 3), True)
-			self.draw_text(right_banner[i], cons.WHITE, (cons.WIDTH - cons.OFFSET, i*cons.HEIGHT // 3), True)
-			self.draw_text(str(self.scores[i]), cons.BLACK, (0, i*cons.HEIGHT // 3 + 2*cons.FONT_INFO_SIZE))
+		for text in self.texts:
+			text.draw()
 
 		self.active.draw(self.draw_block)
 
