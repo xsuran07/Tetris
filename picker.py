@@ -7,4 +7,4 @@ class Picker:
 
 	def pick(self):
 		result = random.choice(self.values)
-		return result(4, 5)
+		return result(4, 0)
