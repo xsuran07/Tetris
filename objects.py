@@ -6,7 +6,7 @@ class Shape1:
 		self.x = x
 		self.y = y
 		self.pos = 0
-		self.color = (255, 0, 0)
+		self.color = cons.RED
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 0, 0],
 						[0, 1, 1, 0],
@@ -50,7 +50,7 @@ class Shape1:
 			for j, square in enumerate(row):
 				if(square):
 					key = (self.x - 1 + j, self.y - 2 + i)
-					ret[key] = 1
+					ret[key] = self.color
 
 		return ret
 	
@@ -59,11 +59,12 @@ class Shape1:
 			for j, square in enumerate(row):
 				if(square):
 					key = (self.x - 1 + j, self.y - 2 + i)
-					struct[key] = 1
+					struct[key] = self.color
 
 class Shape2(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.GREEN
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 0, 0],
 						[1, 1, 1, 1],
@@ -86,6 +87,7 @@ class Shape2(Shape1):
 class Shape3(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.BLUE
 		self.states = [[[0, 0, 0, 0],
 						[1, 0, 0, 0],
 						[1, 1, 1, 0],
@@ -108,6 +110,7 @@ class Shape3(Shape1):
 class Shape4(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.LIGHT_PURPLE
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 1, 0],
 						[1, 1, 1, 0],
@@ -130,6 +133,7 @@ class Shape4(Shape1):
 class Shape5(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.DARK_PURPLE
 		self.states = [[[0, 0, 0, 0],
 						[0, 1, 1, 0],
 						[1, 1, 0, 0],
@@ -152,6 +156,7 @@ class Shape5(Shape1):
 class Shape6(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.LIGHT_ORANGE
 		self.states = [[[0, 0, 0, 0],
 						[1, 1, 0, 0],
 						[0, 1, 1, 0],
@@ -174,6 +179,7 @@ class Shape6(Shape1):
 class Shape7(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
+		self.color = cons.DARK_ORANGE
 		self.states = [[[0, 0, 0, 0],
 						[0, 1, 0, 0],
 						[1, 1, 1, 0],

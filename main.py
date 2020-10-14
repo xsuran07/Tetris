@@ -22,13 +22,13 @@ class Game:
 		self.picker = picker.Picker() #object thats perform picking random game object
 		self.active = self.picker.pick() #randomly picked game object
 		self.ocuppied = {} #hash map of all ocuppied blocks
-		self.objects = [] #array of all game non active objects TODO this is redundant
 
 		#sets boundaries
 		for i in range(18):
-			self.ocuppied[-1, i] = 1
-			self.ocuppied[10, i] = 1
-			self.ocuppied[i, 18] = 1
+			self.ocuppied[-1, i] = cons.BLACK
+			self.ocuppied[10, i] = cons.BLACK
+			if(i < 10):
+				self.ocuppied[i, 18] = cons.BLACK
 
 		#initialize all texts
 		left_banner = ["SCORE", "LINES", "LEVEL"]
@@ -64,9 +64,10 @@ class Game:
 		for text in self.texts:
 			text.draw()
 
-		#draws all non active objects
-		for item in self.objects:
-			item.draw(self.draw_block)
+		for key in self.ocuppied:
+			color = self.ocuppied[key]
+			if(color != cons.BLACK):
+				self.draw_block(key[0], key[1], cons.WHITE, color)
 
 		self.active.draw(self.draw_block)
 
@@ -97,31 +98,97 @@ class Game:
 			elif(event.type == pygame.KEYUP):
 				if(event.key == pygame.K_DOWN):
 					self.y_speed = cons.Y_SPEED_SLOW
-			
+
+	## @brief Checks, if there are new full lines (if so, removes them)
+	## @return Number of removes lines + index of topmost removed line
+	def full_lines(self):
+		cnt = 0
+		top_line = 42
+
+		tmp = self.active.get_active_blocks()
+
+		#finds out, if there is a continuos lines
+		for item in tmp:
+			line_out = True
+
+			for i in range(10):
+				if((i, item[1]) not in self.ocuppied):
+					line_out = False
+					break		
+
+			#if so, removes them
+			if(not line_out):
+				continue
+
+			cnt += 1
+			top_line = min(top_line, item[1])
+
+			for i in range(10):
+				del self.ocuppied[(i, item[1])]
+
+		return [cnt, top_line]
+
+	## @brief Moves every block above removed lines down
+	def move_blocks(self, to_remove, count):
+		if(count == 0):
+			return
+		
+		i = to_remove
+
+		while(i >= 0):
+			for j in range(10):
+				if((j, i) in self.ocuppied):
+					if(self.ocuppied[(j, i)] == cons.BLACK):
+						continue
+					else:
+						self.ocuppied[(j, i + count)] = self.ocuppied[(j, i)]	
+						del self.ocuppied[(j, i)]
+			i -= 1
+
+	## @brief Checks if blocks didn't reach the top
+	## @brief Returns True if so, False otherwise
+	def above_top(self):
+		if(self.active.get_y() == 0):
+			return True
+		else:
+			return False
+
+	## @brief Checks if active object didn't colide with other blocks or edges
+	## @brief Returns True if so, False otherwise
+	def collision(self):
+		tmp = self.active.get_active_blocks()
+		for item in tmp:
+			if item in self.ocuppied:
+				return True
+
+		return False	
+
 	## @brief Main game loop
 	def loop(self):
 		while(self.running):
-			self.event_handler()	
+			self.event_handler()		
 
 			#checks if active object didn't hit ocuppied square (left-right direction)
-			tmp = self.active.get_active_blocks()
-			for item in tmp:
-				if item in self.ocuppied:
+			for i in range(2):
+				if(self.collision()):
 					self.active.add_x(-self.last_x_dif)
-					break
 
 			if(self.counter % self.y_speed == 0):
 				self.active.add_y(1)
 
 			#checks if active object didn't hit ocuppied square (down direction)
-			tmp = self.active.get_active_blocks()
-			for item in tmp:
-				if item in self.ocuppied:
-					self.active.add_y(-1)
-					self.active.add_active_blocks(self.ocuppied)
-					self.objects.append(self.active)
-					self.active = self.picker.pick()
-					break
+			if(self.collision()):
+				if(self.above_top()):
+					self.running = False	
+
+				self.active.add_y(-1)
+				self.active.add_active_blocks(self.ocuppied)
+
+				cnt, top_line = self.full_lines()					
+	
+				self.move_blocks(top_line - 1, cnt)
+
+				self.active = self.picker.pick()
 
 			self.draw_layout()
 
