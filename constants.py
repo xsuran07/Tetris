@@ -1,3 +1,7 @@
+## @brief Constants used in other moudules.
+## @author Jakub Šuráň
+
+#game parameters
 WIDTH = 1000
 HEIGHT = 900
 FONT_INFO_SIZE = 60
@@ -5,6 +9,12 @@ SQUARE = WIDTH // 20
 OFFSET = WIDTH // 4
 Y_SPEED_SLOW = 40
 Y_SPEED_FAST = Y_SPEED_SLOW // 10
+SCORE = 0
+LINES = 1
+LEVEL = 2
+T_SCORE = 2
+T_LINES = 5
+T_LEVEL = 8
 
 #colors
 WHITE = (255, 255, 255)
