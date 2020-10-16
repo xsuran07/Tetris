@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 
+## @brief Implementation of main game logic.
+## @author Jakub Šuráň (xsuran07)
+
 import pygame
 import objects as ob
-import constants as cons
+import constants as const
 import text
 import picker
 
 pygame.init()
 
+## @brief Main class handling controling of the whole game.
 class Game:
 	def __init__(self):
 		self.last_x_dif = 0 #stores last change of x coordidate of active object
 		self.counter = 0 #conter of cycles in game loop
-		self.y_speed = cons.Y_SPEED_SLOW #determines, how often active object fall one block down
-		self.screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT)) #main window of the game
+		self.y_speed = const.Y_SPEED_SLOW #determines, how often active object fall one block down
+		self.screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT)) #main window of the game
 		pygame.display.set_caption("Tetris")
 		self.running = True #determines, if game loop should run
 		self.clock = pygame.time.Clock() #determines FPS
@@ -25,40 +29,40 @@ class Game:
 
 		#sets boundaries
 		for i in range(18):
-			self.ocuppied[-1, i] = cons.BLACK
-			self.ocuppied[10, i] = cons.BLACK
+			self.ocuppied[-1, i] = const.BLACK
+			self.ocuppied[10, i] = const.BLACK
 			if(i < 10):
-				self.ocuppied[i, 18] = cons.BLACK
+				self.ocuppied[i, 18] = const.BLACK
 
 		#initialize all texts
 		left_banner = ["SCORE", "LINES", "LEVEL"]
 		right_banner = ["FIRST", "SECOND", "THIRD"]
 		
 		for i in range(3):
-			self.texts.append(text.Text(left_banner[i], 0, i*cons.HEIGHT // 3, cons.WHITE, self.screen, True))
-			self.texts.append(text.Text(right_banner[i], cons.WIDTH - cons.OFFSET, i*cons.HEIGHT // 3, cons.WHITE, self.screen, True))
-			self.texts.append(text.Text(str(self.scores[i]), 0, i*cons.HEIGHT // 3 + 2*cons.FONT_INFO_SIZE, cons.BLACK, self.screen, False))
+			self.texts.append(text.Text(left_banner[i], 0, i*const.HEIGHT // 3, const.WHITE, self.screen, True))
+			self.texts.append(text.Text(right_banner[i], const.WIDTH - const.OFFSET, i*const.HEIGHT // 3, const.WHITE, self.screen, True))
+			self.texts.append(text.Text(str(self.scores[i]), 0, i*const.HEIGHT // 3 + 2*const.FONT_INFO_SIZE, const.BLACK, self.screen, False))
 
-	# @brief Draws one block of play field
+	## @brief Draws one block of play field.
 	def draw_block(self, x, y, color1, color2):
-		x_cor = cons.OFFSET + x*cons.SQUARE
-		y_cor =  y*cons.SQUARE
-		pygame.draw.rect(self.screen, color1, (x_cor, y_cor, cons.SQUARE, cons.SQUARE))
+		x_cor = const.OFFSET + x*const.SQUARE
+		y_cor =  y*const.SQUARE
+		pygame.draw.rect(self.screen, color1, (x_cor, y_cor, const.SQUARE, const.SQUARE))
    	
-		x_cor = cons.OFFSET + x*cons.SQUARE+ 2
-		y_cor =  y*cons.SQUARE + 2
-		pygame.draw.rect(self.screen, color2, (x_cor, y_cor, cons.SQUARE - 4, cons.SQUARE - 4))
+		x_cor = const.OFFSET + x*const.SQUARE+ 2
+		y_cor =  y*const.SQUARE + 2
+		pygame.draw.rect(self.screen, color2, (x_cor, y_cor, const.SQUARE - 4, const.SQUARE - 4))
 
-	## @brief Draws whole layout
+	## @brief Draws whole layout.
 	def draw_layout(self):
 		#draws two side banners
-		pygame.draw.rect(self.screen, cons.BLUE, (0, 0, cons.OFFSET, cons.HEIGHT))
-		pygame.draw.rect(self.screen, cons.BLUE, (cons.WIDTH - cons.OFFSET, 0, cons.OFFSET, cons.HEIGHT))
+		pygame.draw.rect(self.screen, const.BLUE, (0, 0, const.OFFSET, const.HEIGHT))
+		pygame.draw.rect(self.screen, const.BLUE, (const.WIDTH - const.OFFSET, 0, const.OFFSET, const.HEIGHT))
 
 		#draws main play field (empty)
-		for i in range(cons.HEIGHT // cons.SQUARE):
+		for i in range(const.HEIGHT // const.SQUARE):
 			for j in range(10):
-				self.draw_block(j, i, cons.WHITE, cons.BLACK)
+				self.draw_block(j, i, const.WHITE, const.BLACK)
 
 		#draws all texts
 		for text in self.texts:
@@ -66,12 +70,12 @@ class Game:
 
 		for key in self.ocuppied:
 			color = self.ocuppied[key]
-			if(color != cons.BLACK):
-				self.draw_block(key[0], key[1], cons.WHITE, color)
+			if(color != const.BLACK):
+				self.draw_block(key[0], key[1], const.WHITE, color)
 
 		self.active.draw(self.draw_block)
 
-	## @brief Handles occurance of all events	
+	## @brief Handles occurance of all events.
 	def event_handler(self):
 		#close main window if chosen
 		for event in pygame.event.get():
@@ -84,7 +88,7 @@ class Game:
 					self.active.pos = (self.active.pos + 1) % 4
 				#speeds down-movement of active object
 				elif(event.key == pygame. K_DOWN):
-					self.y_speed = cons.Y_SPEED_FAST
+					self.y_speed = const.Y_SPEED_FAST
 				#moves active object to the left
 				elif(event.key == pygame.K_LEFT):
 					self.active.add_x(-1)
@@ -97,10 +101,10 @@ class Game:
 			#sets down-movementa of active object to normal
 			elif(event.type == pygame.KEYUP):
 				if(event.key == pygame.K_DOWN):
-					self.y_speed = cons.Y_SPEED_SLOW
+					self.y_speed = const.Y_SPEED_SLOW
 
-	## @brief Checks, if there are new full lines (if so, removes them)
-	## @return Number of removes lines + index of topmost removed line
+	## @brief Checks, if there are new full lines (if so, removes them).
+	## @return Number of removes lines + index of topmost removed line.
 	def full_lines(self):
 		cnt = 0
 		top_line = 42
@@ -128,7 +132,7 @@ class Game:
 
 		return [cnt, top_line]
 
-	## @brief Moves every block above removed lines down
+	## @brief Moves every block above removed lines down.
 	def move_blocks(self, to_remove, count):
 		if(count == 0):
 			return
@@ -138,23 +142,23 @@ class Game:
 		while(i >= 0):
 			for j in range(10):
 				if((j, i) in self.ocuppied):
-					if(self.ocuppied[(j, i)] == cons.BLACK):
+					if(self.ocuppied[(j, i)] == const.BLACK):
 						continue
 					else:
 						self.ocuppied[(j, i + count)] = self.ocuppied[(j, i)]	
 						del self.ocuppied[(j, i)]
 			i -= 1
 
-	## @brief Checks if blocks didn't reach the top
-	## @brief Returns True if so, False otherwise
+	## @brief Checks if blocks didn't reach the top.
+	## @brief Returns True if so, False otherwise.
 	def above_top(self):
 		if(self.active.get_y() == 0):
 			return True
 		else:
 			return False
 
-	## @brief Checks if active object didn't colide with other blocks or edges
-	## @brief Returns True if so, False otherwise
+	## @brief Checks if active object didn't colide with other blocks or edges.
+	## @brief Returns True if so, False otherwise.
 	def collision(self):
 		tmp = self.active.get_active_blocks()
 		for item in tmp:
@@ -163,7 +167,7 @@ class Game:
 
 		return False	
 
-	## @brief Main game loop
+	## @brief Main game loop.
 	def loop(self):
 		while(self.running):
 			self.event_handler()		
@@ -185,6 +189,8 @@ class Game:
 				self.active.add_active_blocks(self.ocuppied)
 
 				cnt, top_line = self.full_lines()					
+				self.scores[const.LINES] += cnt
+				self.texts[const.T_LINES].set_text(str(self.scores[const.LINES]))
 	
 				self.move_blocks(top_line - 1, cnt)
 

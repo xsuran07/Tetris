@@ -1,12 +1,12 @@
 import pygame
-import constants as cons
+import constants as const
 
 class Shape1:
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
 		self.pos = 0
-		self.color = cons.RED
+		self.color = const.RED
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 0, 0],
 						[0, 1, 1, 0],
@@ -30,7 +30,7 @@ class Shape1:
 		for i, row in enumerate(self.states[self.pos]):
 			for j, square in enumerate(row):
 				if(square):
-					drawer(self.x - 1 + j, self.y - 2 + i, cons.WHITE, self.color)
+					drawer(self.x - 1 + j, self.y - 2 + i, const.WHITE, self.color)
 	def get_x(self):
 		return self.x
 
@@ -64,7 +64,7 @@ class Shape1:
 class Shape2(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.GREEN
+		self.color = const.GREEN
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 0, 0],
 						[1, 1, 1, 1],
@@ -87,7 +87,7 @@ class Shape2(Shape1):
 class Shape3(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.BLUE
+		self.color = const.BLUE
 		self.states = [[[0, 0, 0, 0],
 						[1, 0, 0, 0],
 						[1, 1, 1, 0],
@@ -110,7 +110,7 @@ class Shape3(Shape1):
 class Shape4(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.LIGHT_PURPLE
+		self.color = const.LIGHT_PURPLE
 		self.states = [[[0, 0, 0, 0],
 						[0, 0, 1, 0],
 						[1, 1, 1, 0],
@@ -133,7 +133,7 @@ class Shape4(Shape1):
 class Shape5(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.DARK_PURPLE
+		self.color = const.DARK_PURPLE
 		self.states = [[[0, 0, 0, 0],
 						[0, 1, 1, 0],
 						[1, 1, 0, 0],
@@ -156,7 +156,7 @@ class Shape5(Shape1):
 class Shape6(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.LIGHT_ORANGE
+		self.color = const.LIGHT_ORANGE
 		self.states = [[[0, 0, 0, 0],
 						[1, 1, 0, 0],
 						[0, 1, 1, 0],
@@ -179,7 +179,7 @@ class Shape6(Shape1):
 class Shape7(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)
-		self.color = cons.DARK_ORANGE
+		self.color = const.DARK_ORANGE
 		self.states = [[[0, 0, 0, 0],
 						[0, 1, 0, 0],
 						[1, 1, 1, 0],
