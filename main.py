@@ -24,8 +24,11 @@ class Game:
 		self.texts = [] #array with all text labels
 		self.scores = [0, 0, 1] #values of SCORE, LINES and LEVEL
 		self.picker = picker.Picker() #object thats perform picking random game object
-		self.active = self.picker.pick() #randomly picked game object
+		self.active = self.picker.pick(4, 0) #randomly picked game object
 		self.ocuppied = {} #hash map of all ocuppied blocks
+		self.next1 = self.picker.pick(const.NEXT1_X, const.NEXT1_Y)
+		self.next2 = self.picker.pick(const.NEXT2_X, const.NEXT2_Y)
+		self.next3 = self.picker.pick(const.NEXT3_X, const.NEXT3_Y)	
 
 		#sets boundaries
 		for i in range(18):
@@ -67,6 +70,10 @@ class Game:
 		#draws all texts
 		for text in self.texts:
 			text.draw()
+
+		self.next1.draw(self.draw_block)
+		self.next2.draw(self.draw_block)
+		self.next3.draw(self.draw_block)
 
 		for key in self.ocuppied:
 			color = self.ocuppied[key]
@@ -194,7 +201,16 @@ class Game:
 	
 				self.move_blocks(top_line - 1, cnt)
 
-				self.active = self.picker.pick()
+				self.active = self.next1
+				self.active.set_cor(4, 0)
+
+				self.next1 = self.next2
+				self.next1.set_cor(const.NEXT1_X, const.NEXT1_Y)	
+
+				self.next2 = self.next3
+				self.next2.set_cor(const.NEXT2_X, const.NEXT2_Y)
+
+				self.next3 = self.picker.pick(const.NEXT3_X, const.NEXT3_Y)
 
 			self.draw_layout()
 

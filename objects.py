@@ -8,21 +8,21 @@ class Shape1:
 		self.pos = 0
 		self.color = const.RED
 		self.states = [[[0, 0, 0, 0],
+						[0, 1, 1, 0],
+						[0, 1, 1, 0],
 						[0, 0, 0, 0],
-						[0, 1, 1, 0],
-						[0, 1, 1, 0],
 					], [[0, 0, 0, 0],
+						[0, 1, 1, 0],
+						[0, 1, 1, 0],
 						[0, 0, 0, 0],
-						[0, 1, 1, 0],
-						[0, 1, 1, 0],
 					], [[0, 0, 0, 0],
+						[0, 1, 1, 0],
+						[0, 1, 1, 0],
 						[0, 0, 0, 0],
-						[0, 1, 1, 0],
-						[0, 1, 1, 0],
 					], [[0, 0, 0, 0],
+						[0, 1, 1, 0],
+						[0, 1, 1, 0],
 						[0, 0, 0, 0],
-						[0, 1, 1, 0],
-						[0, 1, 1, 0],
 					],
 		]
 
@@ -31,11 +31,16 @@ class Shape1:
 			for j, square in enumerate(row):
 				if(square):
 					drawer(self.x - 1 + j, self.y - 2 + i, const.WHITE, self.color)
+
 	def get_x(self):
 		return self.x
 
 	def get_y(self):
 		return self.y
+
+	def set_cor(self, new_x, new_y):
+		self.x = new_x
+		self.y = new_y
 
 	def add_x(self, value):
 		self.x += value
