@@ -34,7 +34,9 @@ class Game:
 		self.running = True #determines wheater game is runnign
 		self.center_x = (const.WIDTH - const.ER_WIDTH) // 2 #x-coordinate of box on start and ending screens
 		self.center_y = (const.HEIGHT - const.ER_HEIGHT) // 2 #y-coordinate of box on start and ending screens
-	
+		self.left_banner = ["SCORE", "LINES", "LEVEL"]
+		self.right_banner = ["FIRST", "SECOND", "THIRD"]
+
 		#sets boundaries
 		for i in range(18):
 			self.ocuppied[-1, i] = const.BLACK
@@ -50,18 +52,15 @@ class Game:
 		self.retry_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
 		 const.BUTTON_HEIGHT, "RETRY", const.RED, const.BLUE, self.retry)
 
-		#initialize all texts
-		left_banner = ["SCORE", "LINES", "LEVEL"]
-		right_banner = ["FIRST", "SECOND", "THIRD"]
-	
+		####initialize all texts
 		#logo on starting screen
 		self.logo = text.Logo(self.center_x, self.center_y, self.screen, const.ER_WIDTH, const.LOGO_SIZE)
 	
 		#on side banners
 		for i in range(3):
-			self.texts.append(text.Text(left_banner[i], 0, i*const.HEIGHT // 3, const.WHITE, self.screen,
+			self.texts.append(text.Text(self.left_banner[i], 0, i*const.HEIGHT // 3, const.WHITE, self.screen,
 			 const.OFFSET, const.TEXT_SIZE, True))
-			self.texts.append(text.Text(right_banner[i], const.WIDTH - const.OFFSET, i*const.HEIGHT // 3,
+			self.texts.append(text.Text(self.right_banner[i], const.WIDTH - const.OFFSET, i*const.HEIGHT // 3,
 			 const.WHITE, self.screen, const.OFFSET, const.TEXT_SIZE, True))
 			self.texts.append(text.Text(str(self.scores[i]), 0, i*const.HEIGHT // 3 + 2*const.TEXT_SIZE,
 			 const.BLACK, self.screen, const.OFFSET, const.TEXT_SIZE))
@@ -70,9 +69,9 @@ class Game:
 		self.end_report.append(text.Text("GAME OVER", self.center_x, self.center_y, const.WHITE, self.screen, const.ER_WIDTH, True))
 		for i in range(3):
 			y_coor = self.center_y + (i+2)*const.TEXT_SIZE
-			self.end_report.append(text.Text("Final " + left_banner[i]+":" + str(self.scores[i]),
+			self.end_report.append(text.Text("Final " + self.left_banner[i]+":" + str(self.scores[i]),
 			 self.center_x, y_coor, const.BLACK, self.screen,  const.ER_WIDTH, const.TEXT_SIZE))
-
+	
 	## @brief Setup game when PLAY button is pressed
 	def start(self):
 		self.state = const.GAME
@@ -112,13 +111,13 @@ class Game:
 	## @brief Draws whole layout.
 	def draw_layout(self):
 		#draws two side banners
-		pygame.draw.rect(self.screen, const.BLUE, (0, 0, const.OFFSET, const.HEIGHT))
-		pygame.draw.rect(self.screen, const.BLUE, (const.WIDTH - const.OFFSET, 0, const.OFFSET, const.HEIGHT))
+		pygame.draw.rect(self.screen, const.LIGHT_YELLOW, (0, 0, const.OFFSET, const.HEIGHT))
+		pygame.draw.rect(self.screen, const.LIGHT_YELLOW, (const.WIDTH - const.OFFSET, 0, const.OFFSET, const.HEIGHT))
 
 		#draws main play field (empty)
 		for i in range(const.HEIGHT // const.SQUARE):
 			for j in range(10):
-				self.draw_block(j, i, const.WHITE, const.BLACK)
+				self.draw_block(j, i, const.GRAY, const.BLACK)
 
 		#draws texts on side banners
 		for text in self.texts:
@@ -132,7 +131,7 @@ class Game:
 
 		#draws logo + button on starting screen
 		if(self.state == const.START):
-			pygame.draw.rect(self.screen, const.WHITE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
+			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
 			self.logo.draw()
 
 			self.play_button.draw(self.screen)
@@ -146,7 +145,7 @@ class Game:
 
 		#draws texts + button on ending screen
 		else:
-			pygame.draw.rect(self.screen, const.WHITE, (self.center_x, self.ceter_y, const.ER_WIDTH, const.ER_HEIGHT))
+			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
 			for text in self.end_report:
 				text.draw()
 
@@ -200,7 +199,7 @@ class Game:
 			#sets down-movementa of active object to normal
 			elif(event.type == pygame.KEYUP and self.state == const.GAME):
 				if(event.key == pygame.K_DOWN):
-					self.y_speed = const.Y_SPEED_SLOW
+					self.y_speed = const.Y_SPEED_SLOW - (self.scores[const.LEVEL] - 1) * 8
 
 	## @brief Checks, if there are new full lines (if so, removes them).
 	## @return Number of removes lines + index of topmost removed line.
@@ -224,7 +223,7 @@ class Game:
 				continue
 
 			cnt += 1
-			top_line = min(top_line, item[1])
+			top_line = max(top_line, item[1])
 
 			for i in range(10):
 				del self.ocuppied[(i, item[1])]
@@ -274,6 +273,8 @@ class Game:
 
 				#checks if active object didn't hit ocuppied square (down direction)
 				if(self.collision()):
+					self.scores[const.SCORE] += 5
+					self.texts[const.T_SCORE].set_text(str(self.scores[const.SCORE]))
 
 					self.active.add_y(-1)
 
@@ -283,13 +284,20 @@ class Game:
 						self.texts[const.T_LINES].set_text("")
 						self.texts[const.T_LEVEL].set_text("")
 						self.state = const.GAME_OVER
+						for i in range(1, 4):
+							self.end_report[i].set_text("Final " + self.left_banner[i-1] + ":" + str(self.scores[i-1]))
+							print(self.end_report[i].text)
+
 						continue
 
 					cnt, top_line = self.full_lines()					
+
 					self.scores[const.LINES] += cnt
 					self.texts[const.T_LINES].set_text(str(self.scores[const.LINES]))
+					self.scores[const.SCORE] += 50*cnt
+					self.texts[const.T_SCORE].set_text(str(self.scores[const.SCORE]))
 	
-					self.move_blocks(top_line - 1, cnt)
+					self.move_blocks(top_line, cnt)
 
 					self.active = self.next1
 					self.active.set_cor(4, 0)
@@ -301,6 +309,11 @@ class Game:
 					self.next2.set_cor(const.NEXT2_X, const.NEXT2_Y)
 
 					self.next3 = self.picker.pick(const.NEXT3_X, const.NEXT3_Y)
+
+					if(self.scores[const.SCORE] > self.scores[const.LEVEL] * 500 and self.scores[const.LEVEL <= 5]):
+						self.scores[const.LEVEL] += 1
+						self.texts[const.T_LEVEL].set_text(str(self.scores[const.LEVEL]))
+						self.y_speed -= 8
 
 			self.draw_layout()
 
