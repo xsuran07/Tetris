@@ -29,12 +29,14 @@ class Text:
 	def set_text(self, new_text):
 		self.text = new_text
 
+## @brief Class for displaying logo.
 class Logo(Text):
-	def __init__(self, text, x, y, screen, width, size):
-		super().__init__(text, x, y, const.BLACK, screen, width, size, box=False)
+	def __init__(self, x, y, screen, width, size):
+		super().__init__("TETRIS", x, y, const.BLACK, screen, width, size, box=False)
 
 		self.color = [(255,0,0), (0,255,0), (0,0,255), (128, 0,128), (255, 200, 0), (255, 150, 0)]
 
+	## @brief Displays given logo.
 	def draw(self):
 		for i in range(len(self.text)):
 			text = self.font.render(str(self.text[i]), True, self.color[i])
