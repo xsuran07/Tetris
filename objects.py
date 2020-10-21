@@ -60,12 +60,20 @@ class Shape1:
 		return ret
 	
 	def add_active_blocks(self, struct):
+		ret = True
+
 		for i, row in enumerate(self.states[self.pos]):
 			for j, square in enumerate(row):
-				if(square):
+				if(square):					
 					key = (self.x - 1 + j, self.y - 2 + i)
-					struct[key] = self.color
 
+					if(key[1] < 0):
+						ret = False
+						continue
+					struct[key] = self.color
+					
+		return ret
+	
 class Shape2(Shape1):
 	def __init__(self, x, y):
 		super().__init__(x, y)

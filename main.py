@@ -224,14 +224,6 @@ class Game:
 						del self.ocuppied[(j, i)]
 			i -= 1
 
-	## @brief Checks if blocks didn't reach the top.
-	## @brief Returns True if so, False otherwise.
-	def above_top(self):
-		if(self.active.get_y() == 0):
-			return True
-		else:
-			return False
-
 	## @brief Checks if active object didn't colide with other blocks or edges.
 	## @brief Returns True if so, False otherwise.
 	def collision(self):
@@ -258,15 +250,14 @@ class Game:
 
 				#checks if active object didn't hit ocuppied square (down direction)
 				if(self.collision()):
-					if(self.above_top()):
+
+					self.active.add_y(-1)
+					if(not self.active.add_active_blocks(self.ocuppied)):
 						self.texts[const.T_SCORE].set_text("")
 						self.texts[const.T_LINES].set_text("")
 						self.texts[const.T_LEVEL].set_text("")
 						self.state = const.GAME_OVER
 						continue
-
-					self.active.add_y(-1)
-					self.active.add_active_blocks(self.ocuppied)
 
 					cnt, top_line = self.full_lines()					
 					self.scores[const.LINES] += cnt
