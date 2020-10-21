@@ -34,10 +34,10 @@ class Logo(Text):
 	def __init__(self, x, y, screen, width, size):
 		super().__init__("TETRIS", x, y, const.BLACK, screen, width, size, box=False)
 
-		self.color = [(255,0,0), (0,255,0), (0,0,255), (128, 0,128), (255, 200, 0), (255, 150, 0)]
+		self.color = [(255,0,0), (51, 204, 51), (0,0,255), (128, 0,128), (255, 200, 0), (255, 150, 0)]
 
 	## @brief Displays given logo.
 	def draw(self):
 		for i in range(len(self.text)):
 			text = self.font.render(str(self.text[i]), True, self.color[i])
-			self.screen.blit(text, (i * 40 + self.x + self.width // 2 - len(self.text)*self.size//4 , self.y))
+			self.screen.blit(text, (i * self.size//2 + self.x + self.width // 2 - len(self.text)*self.size//4 , self.y))
