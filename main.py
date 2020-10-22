@@ -201,11 +201,24 @@ class Game:
 				if(event.key == pygame.K_DOWN):
 					self.y_speed = const.Y_SPEED_SLOW - (self.scores[const.LEVEL] - 1) * 8
 
+	## @brief Moves one line of playing fielf down.
+	## @param y y-coordinate of line we are moving.
+	## @param cnt How far down we're moving the line.
+	def move_line(self, y, cnt):
+		for i in range(10):
+			if((i, y) in self.ocuppied):
+				if(self.ocuppied[(i, y)] == const.BLACK):
+					continue
+				else:
+					self.ocuppied[(i, y + cnt)] = self.ocuppied[(i, y)]	
+					del self.ocuppied[(i, y)]
+
 	## @brief Checks, if there are new full lines (if so, removes them).
 	## @return Number of removes lines + index of topmost removed line.
 	def full_lines(self):
 		cnt = 0
 		top_line = 42
+		problem = -1
 
 		tmp = self.active.get_active_blocks()
 
@@ -218,15 +231,25 @@ class Game:
 					line_out = False
 					break		
 
-			#if so, removes them
+			
 			if(not line_out):
-				continue
+				#if we don't remove this line, but line above was removed, we remember,
+				#problem might occure
+				if(cnt > 0):
+					problem = item[1]
+				continue	
 
+			#else remove the line
 			cnt += 1
-			top_line = max(top_line, item[1])
+			top_line = min(top_line, item[1])
 
 			for i in range(10):
 				del self.ocuppied[(i, item[1])]
+
+			#if above current line is a problem line, we move the problem line down
+			if(problem > 0):
+				self.move_line(problem, 1)
+				problem = -1
 
 		return [cnt, top_line]
 
@@ -239,12 +262,7 @@ class Game:
 
 		while(i >= 0):
 			for j in range(10):
-				if((j, i) in self.ocuppied):
-					if(self.ocuppied[(j, i)] == const.BLACK):
-						continue
-					else:
-						self.ocuppied[(j, i + count)] = self.ocuppied[(j, i)]	
-						del self.ocuppied[(j, i)]
+				self.move_line(i, count)
 			i -= 1
 
 	## @brief Checks if active object didn't colide with other blocks or edges.
@@ -286,7 +304,6 @@ class Game:
 						self.state = const.GAME_OVER
 						for i in range(1, 4):
 							self.end_report[i].set_text("Final " + self.left_banner[i-1] + ":" + str(self.scores[i-1]))
-							print(self.end_report[i].text)
 
 						continue
 
