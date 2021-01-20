@@ -10,8 +10,6 @@ import text
 import picker
 import button
 
-pygame.init()
-
 ## @brief Main class handling controling of the whole game.
 class Game:
 	def __init__(self):
@@ -340,9 +338,11 @@ class Game:
 
 			self.clock.tick(40)
 
-game = Game()
+if __name__ == "__main__":
+	pygame.init()
+	
+	game = Game()
+	game.loop()
 
-game.loop()
-
-pygame.quit()	
+	pygame.quit()	
 

@@ -1,2 +1,5 @@
 #ignore python bytycodes
 __pycache__
+
+#virtual enviroment
+venv
