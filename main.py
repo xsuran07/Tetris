@@ -29,11 +29,16 @@ class Game:
 		self.next1 = self.picker.pick(const.NEXT1_X, const.NEXT1_Y) #first next game object
 		self.next2 = self.picker.pick(const.NEXT2_X, const.NEXT2_Y) #second next game object
 		self.next3 = self.picker.pick(const.NEXT3_X, const.NEXT3_Y)	#third next game object
-		self.running = True #determines wheater game is runnign
+		self.running = True #determines wheater game is running
 		self.center_x = (const.WIDTH - const.ER_WIDTH) // 2 #x-coordinate of box on start and ending screens
 		self.center_y = (const.HEIGHT - const.ER_HEIGHT) // 2 #y-coordinate of box on start and ending screens
 		self.left_banner = ["SCORE", "LINES", "LEVEL"]
 		self.right_banner = ["FIRST", "SECOND", "THIRD"]
+		self.pause_text = text.Text("PAUSE", self.center_x, self.center_y, const.WHITE, self.screen, const.ER_WIDTH, const.TEXT_SIZE, True)
+		self.study_phase = 0
+		self.keys = button.Keys(const.WIDTH // 2 - const.SQUARE//2, 3 * const.HEIGHT // 4, self.draw_key)
+		self.animation_counter = 0
+		self.change = [False, 0]
 
 		#sets boundaries
 		for i in range(18):
@@ -42,13 +47,26 @@ class Game:
 			if(i < 10):
 				self.ocuppied[i, 18] = const.BLACK
 
-		#initialize two buttons
+		#initialize buttons
 		x_coor = (const.WIDTH - const.BUTTON_WIDTH) // 2
 
-		self.play_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
+		self.play_button = button.Button(x_coor, self.center_y + 4*const.TEXT_SIZE, const.BUTTON_WIDTH,
 		 const.BUTTON_HEIGHT, "PLAY", const.RED, const.BLUE, self.start)
+		self.help_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "HELP", const.RED, const.BLUE, self.help)
 		self.retry_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
 		 const.BUTTON_HEIGHT, "RETRY", const.RED, const.BLUE, self.retry)
+		self.pause_button = button.Button((const.OFFSET-const.BUTTON_WIDTH) // 2, const.HEIGHT - const.BUTTON_HEIGHT - 10,
+		 const.BUTTON_WIDTH, const.BUTTON_HEIGHT, "PAUSE", const.RED, const.BLUE, self.pause) 
+		self.resume_button = button.Button(x_coor, self.center_y + 4*const.TEXT_SIZE, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "RESUME", const.RED, const.BLUE, self.resume)
+		self.menu_button = button.Button(x_coor, self.center_y + 2*const.TEXT_SIZE, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "MENU", const.RED, const.BLUE, self.menu)
+		self.prev_button = button.Button(const.OFFSET, const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "PREV", const.RED, const.BLUE, self.prev)
+		self.next_button = button.Button(const.WIDTH - const.OFFSET - const.BUTTON_WIDTH, const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "NEXT", const.RED, const.BLUE, self.next)
+
 
 		####initialize all texts
 		#logo on starting screen
@@ -64,7 +82,7 @@ class Game:
 			 const.BLACK, self.screen, const.OFFSET, const.TEXT_SIZE))
 
 		#on ending screen
-		self.end_report.append(text.Text("GAME OVER", self.center_x, self.center_y, const.WHITE, self.screen, const.ER_WIDTH, True))
+		self.end_report.append(text.Text("GAME OVER", self.center_x, self.center_y, const.WHITE, self.screen, const.ER_WIDTH, const.TEXT_SIZE, True))
 		for i in range(3):
 			y_coor = self.center_y + (i+2)*const.TEXT_SIZE
 			self.end_report.append(text.Text("Final " + self.left_banner[i]+":" + str(self.scores[i]),
@@ -72,10 +90,31 @@ class Game:
 	
 	## @brief Setup game when PLAY button is pressed
 	def start(self):
+		self.play_button.active = False
 		self.state = const.GAME
+	def help(self):
+		self.help_button.active = False
+		self.state = const.HELP
+		self.y_speed = 30
+		self.animation_counter = 0
+	def pause(self):
+		self.pause_button.active = False
+		self.state = const.PAUSE
+	def resume(self):
+		self.resume_button.active = False
+		self.state = const.GAME
+	def menu(self):
+		self.retry()
+		self.menu_button.active = False
+		self.state = const.START
+	def prev(self):
+		self.study_phase -= 1
+	def next(self):
+		self.study_phase += 1
 
 	## @brief Setup game when RETRY button is pressed
 	def retry(self):
+		self.retry_button.active = False
 		self.next1 = self.picker.pick(const.NEXT1_X, const.NEXT1_Y)
 		self.next2 = self.picker.pick(const.NEXT2_X, const.NEXT2_Y)
 		self.next3 = self.picker.pick(const.NEXT3_X, const.NEXT3_Y)
@@ -106,6 +145,11 @@ class Game:
 		y_cor =  y*const.SQUARE + 2
 		pygame.draw.rect(self.screen, color2, (x_cor, y_cor, const.SQUARE - 4, const.SQUARE - 4))
 
+	def draw_key(self, x_cor, y_cor, color1, color2):
+		pygame.draw.rect(self.screen, color1, (x_cor, y_cor, const.SQUARE, const.SQUARE))
+   	
+		pygame.draw.rect(self.screen, color2, (x_cor+2, y_cor+2, const.SQUARE - 4, const.SQUARE - 4))
+
 	## @brief Draws whole layout.
 	def draw_layout(self):
 		#draws two side banners
@@ -121,27 +165,56 @@ class Game:
 		for text in self.texts:
 			text.draw()
 
-		#draws all couppied squeres
+		#draws all ocouppied squares
 		for key in self.ocuppied:
 			color = self.ocuppied[key]
 			if(color != const.BLACK):
 				self.draw_block(key[0], key[1], const.WHITE, color)
 
-		#draws logo + button on starting screen
+		#draws logo + buttons on starting screen (START)
 		if(self.state == const.START):
 			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
 			self.logo.draw()
 
 			self.play_button.draw(self.screen)
+			self.help_button.draw(self.screen)	
+		#(HELP)
+		elif(self.state == const.HELP):
+			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (const.OFFSET, 3*(const.HEIGHT//const.SQUARE)//4*const.SQUARE, const.WIDTH - 2*const.OFFSET, const.HEIGHT))
 
-		#draws 3 next game objects + active game object
+			self.keys.draw()			
+
+			self.active.draw(self.draw_block)
+
+			if(self.study_phase > 0):
+				self.prev_button.draw(self.screen)
+		
+			if(self.study_phase < 2):
+				self.next_button.draw(self.screen)
+
+		#draws 3 next game objects + active game object (GAME)
 		elif(self.state == const.GAME):
 			self.next1.draw(self.draw_block)
 			self.next2.draw(self.draw_block)
 			self.next3.draw(self.draw_block)
 			self.active.draw(self.draw_block)
+			self.pause_button.draw(self.screen)
 
-		#draws texts + button on ending screen
+		#(PAUSE)
+		elif(self.state == const.PAUSE):
+			self.next1.draw(self.draw_block)
+			self.next2.draw(self.draw_block)
+			self.next3.draw(self.draw_block)
+			self.active.draw(self.draw_block)
+			self.pause_button.draw(self.screen)
+
+			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
+			self.pause_text.draw()
+			self.retry_button.draw(self.screen)
+			self.resume_button.draw(self.screen)
+			self.menu_button.draw(self.screen)
+
+		#draws texts + button on ending screen (GAME_OVER)
 		else:
 			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (self.center_x, self.center_y, const.ER_WIDTH, const.ER_HEIGHT))
 			for text in self.end_report:
@@ -163,21 +236,85 @@ class Game:
 						self.play_button.active = True
 					else:
 						self.play_button.active = False
+
+					#check if HELP button should become active
+					if(self.help_button.x <=event.pos[0] <=self.help_button.x + self.help_button.width
+				 	 and self.help_button.y <= event.pos[1] <= self.help_button.y + self.help_button.height):
+						self.help_button.active = True
+					else:
+						self.help_button.active = False
+				#check if RETRY button should become active
 				elif(self.state == const.GAME_OVER):
-					#check if RETRY button should become active
 					if(self.retry_button.x <=event.pos[0] <=self.retry_button.x + self.retry_button.width
 					 and self.retry_button.y <= event.pos[1] <= self.retry_button.y + self.retry_button.height):
 						self.retry_button.active = True
 					else:
-						self.retry_button.active = False	
-			elif(event.type == pygame.MOUSEBUTTONDOWN):
-				#check if PLAY is pressed
+						self.retry_button.active = False
+				#check if PAUSE button should become active
+				elif(self.state == const.GAME):
+					if(self.pause_button.x <=event.pos[0] <=self.pause_button.x + self.pause_button.width
+				 		and self.pause_button.y <= event.pos[1] <= self.pause_button.y + self.pause_button.height):
+							self.pause_button.active = True
+					else:
+						self.pause_button.active = False	
+				#check if RESUME button should become active
+				elif(self.state == const.PAUSE):
+					if(self.resume_button.x <=event.pos[0] <=self.resume_button.x + self.resume_button.width
+				 		and self.resume_button.y <= event.pos[1] <= self.resume_button.y + self.resume_button.height):
+							self.resume_button.active = True
+					else:
+						self.resume_button.active = False
+
+					if(self.retry_button.x <=event.pos[0] <=self.retry_button.x + self.retry_button.width
+					 and self.retry_button.y <= event.pos[1] <= self.retry_button.y + self.retry_button.height):
+						self.retry_button.active = True
+					else:
+						self.retry_button.active = False
+
+					if(self.menu_button.x <=event.pos[0] <=self.menu_button.x + self.menu_button.width
+					 and self.menu_button.y <= event.pos[1] <= self.menu_button.y + self.menu_button.height):
+						self.menu_button.active = True
+					else:
+						self.menu_button.active = False
+				elif(self.state == const.HELP):
+					if(self.prev_button.x <=event.pos[0] <=self.prev_button.x + self.prev_button.width
+				 		and self.prev_button.y <= event.pos[1] <= self.prev_button.y + self.prev_button.height):
+							self.prev_button.active = True
+					else:
+						self.prev_button.active = False
+
+					if(self.next_button.x <=event.pos[0] <=self.next_button.x + self.next_button.width
+				 		and self.next_button.y <= event.pos[1] <= self.next_button.y + self.next_button.height):
+							self.next_button.active = True
+					else:
+						self.next_button.active = False
+
+			elif(event.type == pygame.MOUSEBUTTONDOWN):	
+				#check if play is pressed
 				if(self.play_button.active and self.state == const.START):
 					self.play_button.eventHandler()
-				#check if RETRY is pressed
-				elif(self.retry_button.active and self.state == const.GAME_OVER):
+				#check if retry is pressed
+				elif(self.retry_button.active and (self.state == const.GAME_OVER or self.state == const.PAUSE)):
 					self.retry_button.eventHandler()
-	
+				#check if pause is pressed
+				elif(self.pause_button.active and self.state == const.GAME):
+					self.pause_button.eventHandler()
+				#check if resume is pressed
+				elif(self.resume_button.active and self.state == const.PAUSE):
+					self.resume_button.eventHandler()
+				#check if menu is pressed
+				elif(self.menu_button.active and self.state == const.PAUSE):
+					self.menu_button.eventHandler()
+				#check if help is pressed
+				elif(self.help_button.active and self.state == const.START):
+					self.help_button.eventHandler()
+				#check if prev is pressed
+				elif(self.prev_button.active and self.state == const.HELP):
+					self.prev_button.eventHandler()
+				#check if next is pressed
+				elif(self.next_button.active and self.state == const.HELP):
+					self.next_button.eventHandler()
+
 			elif(event.type == pygame.KEYDOWN and self.state == const.GAME):
 				#change position of active objet
 				if(event.key == pygame.K_UP):
@@ -278,6 +415,38 @@ class Game:
 		while(self.running):
 			self.event_handler()		
 
+			if(self.state == const.HELP):
+				if(self.change[0] and (self.animation_counter - self.change[1] == 15)):
+					self.keys.set_all_black()
+					self.change[0] = False
+				if(self.counter % self.y_speed == 0):
+					self.active.add_y(1)
+
+				if(self.animation_counter == 3*self.y_speed):
+					self.active.add_x(1)
+					self.keys.set_color(3, const.RED)
+					self.change[0] = True
+					self.change[1] = self.animation_counter
+
+				if(self.animation_counter == 5*self.y_speed):
+					self.active.add_x(-1)
+					self.keys.set_color(2, const.RED)
+					self.change[0] = True
+					self.change[1] = self.animation_counter
+
+				if(self.animation_counter == 6*self.y_speed):
+					self.active.add_x(-1)
+					self.keys.set_color(2, const.RED)
+					self.change[0] = True
+					self.change[1] = self.animation_counter
+
+
+				if(self.active.y > 3*(const.HEIGHT//const.SQUARE)//4 - 1):
+					self.active.y = 0
+					self.active.x = 4
+					self.animation_counter = 0
+					self.change[0] = False
+
 			if(self.state == const.GAME):
 				#checks if active object didn't hit ocuppied square (left-right direction)
 				for i in range(2):
@@ -335,6 +504,7 @@ class Game:
 			pygame.display.update()
 
 			self.counter += 1
+			self.animation_counter += 1
 
 			self.clock.tick(40)
 
