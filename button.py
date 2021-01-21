@@ -52,9 +52,8 @@ class Keys:
 		self.colors[num] = color
 
 	def draw(self):
-		self.fun(self.x, self.y, const.WHITE, self.colors[0])
-		self.fun(self.x, self.y+const.SQUARE, const.WHITE, self.colors[1])
-		self.fun(self.x-const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[2])
-		self.fun(self.x+const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[3])
-
+		self.fun(self.x, self.y, const.WHITE, self.colors[0], 0)
+		self.fun(self.x, self.y+const.SQUARE, const.WHITE, self.colors[1], 1)
+		self.fun(self.x-const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[2], 2)
+		self.fun(self.x+const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[3], 3)
 	

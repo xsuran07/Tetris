@@ -15,7 +15,7 @@ class Game:
 	def __init__(self):
 		self.last_x_dif = 0 #stores last change of x coordidate of active object
 		self.counter = 0 #conter of cycles in game loop
-		self.y_speed = const.Y_SPEED_SLOW #determines, how often active object fall one block down
+		self.y_speed = const.Y_SPEED_DEMO #determines, how often active object fall one block down
 		self.screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT)) #main window of the game
 		pygame.display.set_caption("Tetris")
 		self.state = const.START #state of game (START, GAME, GAME_OVER)
@@ -24,7 +24,7 @@ class Game:
 		self.end_report = [] #array with texts on ending screen
 		self.scores = [0, 0, 1] #values of SCORE, LINES and LEVEL
 		self.picker = picker.Picker() #object thats perform picking random game object
-		self.active = self.picker.pick(4, 0) #randomly picked game object
+		self.active =  ob.Shape3(4, 0)#active game object
 		self.ocuppied = {} #hash map of all ocuppied blocks
 		self.next1 = self.picker.pick(const.NEXT1_X, const.NEXT1_Y) #first next game object
 		self.next2 = self.picker.pick(const.NEXT2_X, const.NEXT2_Y) #second next game object
@@ -39,6 +39,14 @@ class Game:
 		self.keys = button.Keys(const.WIDTH // 2 - const.SQUARE//2, 3 * const.HEIGHT // 4, self.draw_key)
 		self.animation_counter = 0
 		self.change = [False, 0]
+		self.help_text = text.Text("1/3", const.OFFSET, const.HEIGHT//2, const.BLACK, self.screen, const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE, False)
+		self.infos = ["You can move with the falling object using right and left arrow - see the animation.", 
+					"You can rotate the falling object using up arraw - see the animation.",
+					"You can speed up movement of the falling object using down arraw - see the animation."]
+		self.help_info = text.Text(self.infos[self.study_phase], const.OFFSET, const.HEIGHT//2 + const.TEXT_SIZE, const.BLACK, self.screen,
+					 const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE2, False, False)
+
+		print(len(self.help_info.text)*const.TEXT_SIZE//2, const.WIDTH - 2*const.OFFSET)
 
 		#sets boundaries
 		for i in range(18):
@@ -66,6 +74,8 @@ class Game:
 		 const.BUTTON_HEIGHT, "PREV", const.RED, const.BLUE, self.prev)
 		self.next_button = button.Button(const.WIDTH - const.OFFSET - const.BUTTON_WIDTH, const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
 		 const.BUTTON_HEIGHT, "NEXT", const.RED, const.BLUE, self.next)
+		self.help_end_button = button.Button(const.WIDTH - const.OFFSET - const.BUTTON_WIDTH, const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
+		 const.BUTTON_HEIGHT, "MENU", const.RED, const.BLUE, self.menu)
 
 
 		####initialize all texts
@@ -92,11 +102,15 @@ class Game:
 	def start(self):
 		self.play_button.active = False
 		self.state = const.GAME
+		self.y_speed = const.Y_SPEED_SLOW
+		self.active = self.picker.pick(4, 0)
 	def help(self):
 		self.help_button.active = False
 		self.state = const.HELP
-		self.y_speed = 30
 		self.animation_counter = 0
+		self.study_phase = 0
+		self.help_text.set_text(str(self.study_phase+1) + "/3")
+		self.active =  ob.Shape3(4, 0)
 	def pause(self):
 		self.pause_button.active = False
 		self.state = const.PAUSE
@@ -105,12 +119,29 @@ class Game:
 		self.state = const.GAME
 	def menu(self):
 		self.retry()
+		self.help_end_button.active = False
 		self.menu_button.active = False
+		self.next_button.active = False
 		self.state = const.START
+		self.prev_button.active = False
 	def prev(self):
 		self.study_phase -= 1
+		self.animation_counter = 0
+		self.active.x = 4
+		self.active.y = 0
+		self.active.pos = 0
+		self.keys.set_all_black()
+		self.help_text.set_text(str(self.study_phase+1) + "/3")
+		self.help_info.set_text(self.infos[self.study_phase])
 	def next(self):
 		self.study_phase += 1
+		self.animation_counter = 0
+		self.active.x = 4
+		self.active.y = 0
+		self.active.pos = 0
+		self.keys.set_all_black()
+		self.help_text.set_text(str(self.study_phase+1) + "/3")
+		self.help_info.set_text(self.infos[self.study_phase])
 
 	## @brief Setup game when RETRY button is pressed
 	def retry(self):
@@ -145,10 +176,19 @@ class Game:
 		y_cor =  y*const.SQUARE + 2
 		pygame.draw.rect(self.screen, color2, (x_cor, y_cor, const.SQUARE - 4, const.SQUARE - 4))
 
-	def draw_key(self, x_cor, y_cor, color1, color2):
+	def draw_key(self, x_cor, y_cor, color1, color2, ar):
 		pygame.draw.rect(self.screen, color1, (x_cor, y_cor, const.SQUARE, const.SQUARE))
    	
 		pygame.draw.rect(self.screen, color2, (x_cor+2, y_cor+2, const.SQUARE - 4, const.SQUARE - 4))
+
+		if(ar == 0):
+			pygame.draw.lines(self.screen, const.WHITE, False, ((x_cor+8, y_cor+const.SQUARE-15), ((x_cor+const.SQUARE // 2), y_cor+10), (x_cor + const.SQUARE-8, y_cor+const.SQUARE-15)))
+		elif(ar == 2):
+			pygame.draw.lines(self.screen, const.WHITE, False, ((x_cor+const.SQUARE-8, y_cor+10) , (x_cor+8, y_cor+const.SQUARE // 2), (x_cor+const.SQUARE-8, y_cor+const.SQUARE-15)))
+		elif(ar == 3):
+			pygame.draw.lines(self.screen, const.WHITE, False, ((x_cor+8, y_cor+10), (x_cor+const.SQUARE-8, y_cor+const.SQUARE // 2), (x_cor+8, y_cor+const.SQUARE-15)))
+		else:
+			pygame.draw.lines(self.screen, const.WHITE, False, ((x_cor+8, y_cor+10), ((x_cor+const.SQUARE // 2), y_cor+const.SQUARE-15), (x_cor + const.SQUARE-8, y_cor+10)))
 
 	## @brief Draws whole layout.
 	def draw_layout(self):
@@ -180,7 +220,7 @@ class Game:
 			self.help_button.draw(self.screen)	
 		#(HELP)
 		elif(self.state == const.HELP):
-			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (const.OFFSET, 3*(const.HEIGHT//const.SQUARE)//4*const.SQUARE, const.WIDTH - 2*const.OFFSET, const.HEIGHT))
+			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (const.OFFSET, (const.HEIGHT//const.SQUARE)//2*const.SQUARE, const.WIDTH - 2*const.OFFSET, const.HEIGHT))
 
 			self.keys.draw()			
 
@@ -191,6 +231,12 @@ class Game:
 		
 			if(self.study_phase < 2):
 				self.next_button.draw(self.screen)
+
+			if(self.study_phase == 2):
+				self.help_end_button.draw(self.screen)
+
+			self.help_text.draw()
+			self.help_info.draw()
 
 		#draws 3 next game objects + active game object (GAME)
 		elif(self.state == const.GAME):
@@ -288,6 +334,11 @@ class Game:
 							self.next_button.active = True
 					else:
 						self.next_button.active = False
+					if(self.help_end_button.x <=event.pos[0] <=self.next_button.x + self.next_button.width
+				 		and self.help_end_button.y <= event.pos[1] <= self.help_end_button.y + self.help_end_button.height):
+							self.help_end_button.active = True
+					else:
+						self.help_end_button.active = False
 
 			elif(event.type == pygame.MOUSEBUTTONDOWN):	
 				#check if play is pressed
@@ -309,11 +360,14 @@ class Game:
 				elif(self.help_button.active and self.state == const.START):
 					self.help_button.eventHandler()
 				#check if prev is pressed
-				elif(self.prev_button.active and self.state == const.HELP):
+				elif(self.study_phase != 0 and self.prev_button.active and self.state == const.HELP):
 					self.prev_button.eventHandler()
 				#check if next is pressed
-				elif(self.next_button.active and self.state == const.HELP):
+				elif(self.study_phase != 2 and self.next_button.active and self.state == const.HELP):
 					self.next_button.eventHandler()
+				#check if "back to menu" is pressed
+				elif(self.study_phase == 2 and self.help_end_button.active and self.state == const.HELP):
+					self.help_end_button.eventHandler()
 
 			elif(event.type == pygame.KEYDOWN and self.state == const.GAME):
 				#change position of active objet
@@ -422,30 +476,61 @@ class Game:
 				if(self.counter % self.y_speed == 0):
 					self.active.add_y(1)
 
-				if(self.animation_counter == 3*self.y_speed):
-					self.active.add_x(1)
-					self.keys.set_color(3, const.RED)
+				if(self.animation_counter == 2*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
+
+					if(self.study_phase == 0):
+						self.active.add_x(1)
+						self.keys.set_color(3, const.RED)
+					elif(self.study_phase == 1):
+						self.active.pos = (self.active.pos + 1) % 4
+						self.keys.set_color(0, const.RED)
+					elif(self.study_phase == 2):
+						self.y_speed = const.Y_SPEED_FAST
+						self.keys.set_color(1, const.RED)
+
+				if(self.animation_counter == 4*self.y_speed):
+					self.change[0] = True
+					self.change[1] = self.animation_counter
+
+					if(self.study_phase == 0):
+						self.active.add_x(-1)
+						self.keys.set_color(2, const.RED)
+					elif(self.study_phase == 1):
+						self.active.pos = (self.active.pos + 1) % 4
+						self.keys.set_color(0, const.RED)
 
 				if(self.animation_counter == 5*self.y_speed):
-					self.active.add_x(-1)
-					self.keys.set_color(2, const.RED)
 					self.change[0] = True
 					self.change[1] = self.animation_counter
+				
+					if(self.study_phase == 0):
+						self.active.add_x(-1)
+						self.keys.set_color(2, const.RED)
+					elif(self.study_phase == 1):
+						self.active.pos = (self.active.pos + 1) % 4
+						self.keys.set_color(0, const.RED)
 
-				if(self.animation_counter == 6*self.y_speed):
-					self.active.add_x(-1)
-					self.keys.set_color(2, const.RED)
+				if(self.animation_counter == 7*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
+				
+					if(self.study_phase == 0):
+						self.active.add_x(1)
+						self.keys.set_color(3, const.RED)
+					elif(self.study_phase == 1):
+						self.active.pos = (self.active.pos + 1) % 4
+						self.keys.set_color(0, const.RED)
 
-
-				if(self.active.y > 3*(const.HEIGHT//const.SQUARE)//4 - 1):
+				if(self.active.y > (const.HEIGHT//const.SQUARE)//2 - 1):
 					self.active.y = 0
 					self.active.x = 4
+					self.active.pos = 0
 					self.animation_counter = 0
 					self.change[0] = False
+					self.y_speed = const.Y_SPEED_DEMO
+					self.keys.set_all_black()
 
 			if(self.state == const.GAME):
 				#checks if active object didn't hit ocuppied square (left-right direction)
