@@ -6,7 +6,7 @@ import constants as const
 
 ## @brief Class for displaying text.
 class Text:
-	def __init__(self, text, x, y, color, screen, width, size, box=False):
+	def __init__(self, text, x, y, color, screen, width, size, box=False, center=True):
 		self.text = text
 		self.x = x
 		self.y = y
@@ -16,14 +16,46 @@ class Text:
 		self.box = box
 		self.size = size
 		self.font = pygame.font.SysFont("ubuntumono", self.size)
+		self.center = center
 
 	## @brief Displays given text.
 	def draw(self):
 		if(self.box):
 			pygame.draw.rect(self.screen, const.ALMOST_BLACK, (self.x, self.y, self.width, self.size))
 
-		tmp = self.font.render(self.text, True, self.color)
-		self.screen.blit(tmp, (self.x + self.width // 2 - len(self.text)*self.size//4, self.y))
+		start = 0
+		end = 1
+		i = 0
+		while(end < len(self.text)):
+			while(self.width > (len(self.text[start : end])+1) * self.size//2 and end < len(self.text)):
+				end += 1
+
+			if(end < len(self.text)):
+				original = end
+				while(self.text[end] != " " and end > 0):
+					end -= 1
+
+				if(end == 0):
+					end = original
+					tmp = self.font.render(self.text[start : end] + "-", True, self.color)
+					self.screen.blit(tmp, (self.x + self.width // 2 - (len(self.text[start : end])+1)*self.size//4, self.y + i*self.size))
+				else:
+					padded = self.text[start : end] + " " * (2*self.width // self.size - len(self.text[start:end]))
+					tmp = self.font.render(padded, True, self.color)
+					self.screen.blit(tmp, (self.x + self.width // 2 - len(padded)*self.size//4, self.y + i*self.size))
+					end += 1
+			else:
+				if(self.center):
+					tmp = self.font.render(self.text[start : end], True, self.color)
+					self.screen.blit(tmp, (self.x + self.width // 2 - len(self.text[start : end])*self.size//4, self.y + i*self.size))
+				else:
+					padded = self.text[start : end] + " " * (2*self.width // self.size - len(self.text[start:end]))
+					tmp = self.font.render(padded, True, self.color)
+					self.screen.blit(tmp, (self.x + self.width // 2 - len(padded)*self.size//4, self.y + i*self.size))
+
+			start = end
+			end += 1
+			i += 1
 
 	## @brief
 	def set_text(self, new_text):
