@@ -20,7 +20,7 @@ class Text:
 	## @brief Displays given text.
 	def draw(self):
 		if(self.box):
-			pygame.draw.rect(self.screen, const.BLACK, (self.x, self.y, self.width, self.size))
+			pygame.draw.rect(self.screen, const.ALMOST_BLACK, (self.x, self.y, self.width, self.size))
 
 		tmp = self.font.render(self.text, True, self.color)
 		self.screen.blit(tmp, (self.x + self.width // 2 - len(self.text)*self.size//4, self.y))

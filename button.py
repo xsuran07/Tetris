@@ -2,6 +2,7 @@
 ## @author Jakub Šuráň (xsuran07)
 
 import pygame
+import constants as const
 
 ## @class Implementation of simle button - changes color when hovered, calls event handler when pressed
 class Button:
@@ -35,3 +36,25 @@ class Button:
 	## @brief Perform given action when button is pressed
 	def eventHandler(self):
 		self.handler()
+
+class Keys:
+	def __init__(self, x, y, fun, color=const.BLACK):
+		self.x = x
+		self.y = y
+		self.fun = fun
+		self.colors = [color, color, color, color]
+
+	def set_all_black(self):
+		for i in range(4):
+			self.colors[i] = const.BLACK
+
+	def set_color(self, num, color):
+		self.colors[num] = color
+
+	def draw(self):
+		self.fun(self.x, self.y, const.WHITE, self.colors[0])
+		self.fun(self.x, self.y+const.SQUARE, const.WHITE, self.colors[1])
+		self.fun(self.x-const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[2])
+		self.fun(self.x+const.SQUARE, self.y+const.SQUARE, const.WHITE, self.colors[3])
+
+	
