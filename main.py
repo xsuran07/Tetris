@@ -32,21 +32,21 @@ class Game:
 		self.running = True #determines wheater game is running
 		self.center_x = (const.WIDTH - const.ER_WIDTH) // 2 #x-coordinate of box on start and ending screens
 		self.center_y = (const.HEIGHT - const.ER_HEIGHT) // 2 #y-coordinate of box on start and ending screens
-		self.left_banner = ["SCORE", "LINES", "LEVEL"]
-		self.right_banner = ["FIRST", "SECOND", "THIRD"]
-		self.pause_text = text.Text("PAUSE", self.center_x, self.center_y, const.WHITE, self.screen, const.ER_WIDTH, const.TEXT_SIZE, True)
-		self.study_phase = 0
-		self.keys = button.Keys(const.WIDTH // 2 - const.SQUARE//2, 3 * const.HEIGHT // 4, self.draw_key)
-		self.animation_counter = 0
-		self.change = [False, 0]
-		self.help_text = text.Text("1/3", const.OFFSET, const.HEIGHT//2, const.BLACK, self.screen, const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE, False)
+		self.left_banner = ["SCORE", "LINES", "LEVEL"] #texts displayed on the left banner
+		self.right_banner = ["FIRST", "SECOND", "THIRD"] #texts displayed on the right banner
+		self.pause_text = text.Text("PAUSE", self.center_x, self.center_y, const.WHITE, self.screen,
+							 const.ER_WIDTH, const.TEXT_SIZE, True) #Header of the pause screen
+		self.study_phase = 0 #determines current state of "How to play"
+		self.keys = button.Keys(const.WIDTH // 2 - const.SQUARE//2, 3 * const.HEIGHT // 4, self.draw_key) #part of animation - arrows
+		self.animation_counter = 0 #counter controling animation behavior
+		self.change = [False, 0] #flag and counter controling animation behavior
+		self.help_text = text.Text("1/3", const.OFFSET, const.HEIGHT//2, const.BLACK, self.screen
+						, const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE, False) #text which displays current state of "How to play"
 		self.infos = ["You can move with the falling object using right and left arrow - see the animation.", 
 					"You can rotate the falling object using up arraw - see the animation.",
-					"You can speed up movement of the falling object using down arraw - see the animation."]
+					"You can speed up movement of the falling object using down arraw - see the animation."] #texts for "How to play"
 		self.help_info = text.Text(self.infos[self.study_phase], const.OFFSET, const.HEIGHT//2 + const.TEXT_SIZE, const.BLACK, self.screen,
-					 const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE2, False, False)
-
-		print(len(self.help_info.text)*const.TEXT_SIZE//2, const.WIDTH - 2*const.OFFSET)
+					 const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE2, False, False) #displays currnt info in "How to play"
 
 		#sets boundaries
 		for i in range(18):
@@ -104,6 +104,7 @@ class Game:
 		self.state = const.GAME
 		self.y_speed = const.Y_SPEED_SLOW
 		self.active = self.picker.pick(4, 0)
+	## @brief Handles transition when HELP button is pressed
 	def help(self):
 		self.help_button.active = False
 		self.state = const.HELP
@@ -111,12 +112,15 @@ class Game:
 		self.study_phase = 0
 		self.help_text.set_text(str(self.study_phase+1) + "/3")
 		self.active =  ob.Shape3(4, 0)
+	## @brief Handles transition when PAUSE button is pressed
 	def pause(self):
 		self.pause_button.active = False
 		self.state = const.PAUSE
+	## @brief Handles transition when RESUME button is pressed
 	def resume(self):
 		self.resume_button.active = False
 		self.state = const.GAME
+	## @brief Handles transition when MENU button is pressed
 	def menu(self):
 		self.retry()
 		self.help_end_button.active = False
@@ -124,6 +128,7 @@ class Game:
 		self.next_button.active = False
 		self.state = const.START
 		self.prev_button.active = False
+	## @brief Handles transition when PREV button is pressed
 	def prev(self):
 		self.study_phase -= 1
 		self.animation_counter = 0
@@ -133,6 +138,7 @@ class Game:
 		self.keys.set_all_black()
 		self.help_text.set_text(str(self.study_phase+1) + "/3")
 		self.help_info.set_text(self.infos[self.study_phase])
+	## @brief Handles transition when NEXT button is pressed
 	def next(self):
 		self.study_phase += 1
 		self.animation_counter = 0
@@ -176,6 +182,7 @@ class Game:
 		y_cor =  y*const.SQUARE + 2
 		pygame.draw.rect(self.screen, color2, (x_cor, y_cor, const.SQUARE - 4, const.SQUARE - 4))
 
+	## @brief Draws arrows for animation in "How to play"
 	def draw_key(self, x_cor, y_cor, color1, color2, ar):
 		pygame.draw.rect(self.screen, color1, (x_cor, y_cor, const.SQUARE, const.SQUARE))
    	
@@ -218,7 +225,7 @@ class Game:
 
 			self.play_button.draw(self.screen)
 			self.help_button.draw(self.screen)	
-		#(HELP)
+		#draws layout for "How to play" state(HELP)
 		elif(self.state == const.HELP):
 			pygame.draw.rect(self.screen, const.LIGHT_BLUE, (const.OFFSET, (const.HEIGHT//const.SQUARE)//2*const.SQUARE, const.WIDTH - 2*const.OFFSET, const.HEIGHT))
 
@@ -246,7 +253,7 @@ class Game:
 			self.active.draw(self.draw_block)
 			self.pause_button.draw(self.screen)
 
-		#(PAUSE)
+		#draws layout for pause state state(PAUSE)
 		elif(self.state == const.PAUSE):
 			self.next1.draw(self.draw_block)
 			self.next2.draw(self.draw_block)
@@ -289,51 +296,57 @@ class Game:
 						self.help_button.active = True
 					else:
 						self.help_button.active = False
-				#check if RETRY button should become active
 				elif(self.state == const.GAME_OVER):
+					#check if RETRY button should become active
 					if(self.retry_button.x <=event.pos[0] <=self.retry_button.x + self.retry_button.width
 					 and self.retry_button.y <= event.pos[1] <= self.retry_button.y + self.retry_button.height):
 						self.retry_button.active = True
 					else:
 						self.retry_button.active = False
-				#check if PAUSE button should become active
 				elif(self.state == const.GAME):
+					#check if PAUSE button should become active
 					if(self.pause_button.x <=event.pos[0] <=self.pause_button.x + self.pause_button.width
 				 		and self.pause_button.y <= event.pos[1] <= self.pause_button.y + self.pause_button.height):
 							self.pause_button.active = True
 					else:
 						self.pause_button.active = False	
-				#check if RESUME button should become active
 				elif(self.state == const.PAUSE):
+					#check if RESUME button should become active
 					if(self.resume_button.x <=event.pos[0] <=self.resume_button.x + self.resume_button.width
 				 		and self.resume_button.y <= event.pos[1] <= self.resume_button.y + self.resume_button.height):
 							self.resume_button.active = True
 					else:
 						self.resume_button.active = False
 
+					#check if RETRY button should become active
 					if(self.retry_button.x <=event.pos[0] <=self.retry_button.x + self.retry_button.width
 					 and self.retry_button.y <= event.pos[1] <= self.retry_button.y + self.retry_button.height):
 						self.retry_button.active = True
 					else:
 						self.retry_button.active = False
 
+					#check if MENU button should become active
 					if(self.menu_button.x <=event.pos[0] <=self.menu_button.x + self.menu_button.width
 					 and self.menu_button.y <= event.pos[1] <= self.menu_button.y + self.menu_button.height):
 						self.menu_button.active = True
 					else:
 						self.menu_button.active = False
 				elif(self.state == const.HELP):
+					#check if PREV button should become active
 					if(self.prev_button.x <=event.pos[0] <=self.prev_button.x + self.prev_button.width
 				 		and self.prev_button.y <= event.pos[1] <= self.prev_button.y + self.prev_button.height):
 							self.prev_button.active = True
 					else:
 						self.prev_button.active = False
 
+					#check if NEXT button should become active
 					if(self.next_button.x <=event.pos[0] <=self.next_button.x + self.next_button.width
 				 		and self.next_button.y <= event.pos[1] <= self.next_button.y + self.next_button.height):
 							self.next_button.active = True
 					else:
 						self.next_button.active = False
+
+					#check if "back to menu" button should become active
 					if(self.help_end_button.x <=event.pos[0] <=self.next_button.x + self.next_button.width
 				 		and self.help_end_button.y <= event.pos[1] <= self.help_end_button.y + self.help_end_button.height):
 							self.help_end_button.active = True
@@ -469,13 +482,18 @@ class Game:
 		while(self.running):
 			self.event_handler()		
 
+			#animation in "How to play"
 			if(self.state == const.HELP):
+				#controls end of part of animation
 				if(self.change[0] and (self.animation_counter - self.change[1] == 15)):
 					self.keys.set_all_black()
 					self.change[0] = False
+
+				#handles falling of the object
 				if(self.counter % self.y_speed == 0):
 					self.active.add_y(1)
 
+				#first "active event"
 				if(self.animation_counter == 2*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
@@ -490,6 +508,7 @@ class Game:
 						self.y_speed = const.Y_SPEED_FAST
 						self.keys.set_color(1, const.RED)
 
+				#second "active event"
 				if(self.animation_counter == 4*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
@@ -501,6 +520,7 @@ class Game:
 						self.active.pos = (self.active.pos + 1) % 4
 						self.keys.set_color(0, const.RED)
 
+				#third "active event"
 				if(self.animation_counter == 5*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
@@ -512,6 +532,7 @@ class Game:
 						self.active.pos = (self.active.pos + 1) % 4
 						self.keys.set_color(0, const.RED)
 
+				#fourth "active event"
 				if(self.animation_counter == 7*self.y_speed):
 					self.change[0] = True
 					self.change[1] = self.animation_counter
@@ -523,6 +544,7 @@ class Game:
 						self.active.pos = (self.active.pos + 1) % 4
 						self.keys.set_color(0, const.RED)
 
+				#controls, if object hit the bottom
 				if(self.active.y > (const.HEIGHT//const.SQUARE)//2 - 1):
 					self.active.y = 0
 					self.active.x = 4
@@ -532,6 +554,7 @@ class Game:
 					self.y_speed = const.Y_SPEED_DEMO
 					self.keys.set_all_black()
 
+			#main game
 			if(self.state == const.GAME):
 				#checks if active object didn't hit ocuppied square (left-right direction)
 				for i in range(2):
