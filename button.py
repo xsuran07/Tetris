@@ -37,6 +37,7 @@ class Button:
 	def eventHandler(self):
 		self.handler()
 
+## @class Representation of arraw keys for animation
 class Keys:
 	def __init__(self, x, y, fun, color=const.BLACK):
 		self.x = x
@@ -48,9 +49,11 @@ class Keys:
 		for i in range(4):
 			self.colors[i] = const.BLACK
 
+	## @brief Sets color of the chosen arrow
 	def set_color(self, num, color):
 		self.colors[num] = color
 
+	## @brief Draws all keys
 	def draw(self):
 		self.fun(self.x, self.y, const.WHITE, self.colors[0], 0)
 		self.fun(self.x, self.y+const.SQUARE, const.WHITE, self.colors[1], 1)
