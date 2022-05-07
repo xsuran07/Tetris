@@ -5,7 +5,8 @@ Implementation of class for random picking.
 '''
 
 import random
-import objects as ob
+
+from . import objects as ob
 
 
 class Picker:

@@ -5,7 +5,8 @@ Implementation of button.
 '''
 
 import pygame
-import constants as const
+
+from . import constants as const
 
 
 class Button:

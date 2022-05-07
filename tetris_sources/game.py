@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 '''
 Author(s): Jakub Šuráň
 
@@ -7,11 +5,12 @@ Implementation of main game logic.
 '''
 
 import pygame
-import objects as ob
-import constants as const
-import text
-import picker
-import button
+
+from . import objects as ob
+from . import constants as const
+from . import text
+from . import picker
+from . import button
 
 
 class Game:
@@ -701,12 +700,3 @@ class Game:
             self.animation_counter += 1
 
             self.clock.tick(40)
-
-
-if __name__ == "__main__":
-    pygame.init()
-
-    game = Game()
-    game.loop()
-
-    pygame.quit()

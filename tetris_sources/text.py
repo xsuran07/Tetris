@@ -5,7 +5,8 @@ Implementation of class for displaying text.
 '''
 
 import pygame
-import constants as const
+
+from . import constants as const
 
 
 class Text:

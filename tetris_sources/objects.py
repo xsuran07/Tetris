@@ -4,7 +4,7 @@ Author(s): Jakub Šuráň
 Implementation of game objects.
 '''
 
-import constants as const
+from . import constants as const
 
 
 class Shape1:
