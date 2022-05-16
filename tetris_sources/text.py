@@ -50,18 +50,18 @@ class Text:
                 original = end
 
                 # finds last spase
-                while(self.text[end] != " " and end > 0):
+                while(self.text[end] != ' ' and end > 0):
                     end -= 1
 
                 # text doesn't include space - have to split some word
                 if(end == 0):
                     end = original
-                    tmp = self.font.render(self.text[start: end] + "-", True, self.color)
+                    tmp = self.font.render(self.text[start: end] + '-', True, self.color)
                     self.screen.blit(tmp, (self.x + self.width //
                                      2 - (len(self.text[start: end])+1)*self.size//4, self.y + i*self.size))
                 # text  includes at least one space - it is easy to split text
                 else:
-                    padded = self.text[start: end] + " " * (2*self.width // self.size - len(self.text[start:end]))
+                    padded = self.text[start: end] + ' ' * (2*self.width // self.size - len(self.text[start:end]))
                     tmp = self.font.render(padded, True, self.color)
                     self.screen.blit(tmp, (self.x + self.width // 2 - len(padded)*self.size//4, self.y + i*self.size))
                     end += 1
@@ -74,7 +74,7 @@ class Text:
                                      2 - len(self.text[start: end])*self.size//4, self.y + i*self.size))
                 # else pads text with spaces
                 else:
-                    padded = self.text[start: end] + " " * (2*self.width // self.size - len(self.text[start:end]))
+                    padded = self.text[start: end] + ' ' * (2*self.width // self.size - len(self.text[start:end]))
                     tmp = self.font.render(padded, True, self.color)
                     self.screen.blit(tmp, (self.x + self.width // 2 - len(padded)*self.size//4, self.y + i*self.size))
 
@@ -96,7 +96,7 @@ class Logo(Text):
     '''
 
     def __init__(self, x, y, screen, width, size):
-        super().__init__("TETRIS", x, y, const.BLACK, screen, width, size, box=False)
+        super().__init__('TETRIS', x, y, const.BLACK, screen, width, size, box=False)
 
         self.color = [(255, 0, 0), (51, 204, 51), (0, 0, 255), (128, 0, 128), (255, 200, 0), (255, 150, 0)]
 

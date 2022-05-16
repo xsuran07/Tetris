@@ -9,7 +9,7 @@ from . import constants as const
 
 class Shape1:
     '''
-    Representation of game object ("square")
+    Representation of game object (square)
     '''
 
     def __init__(self, x, y):
@@ -131,7 +131,7 @@ class Shape1:
 
 class Shape2(Shape1):
     '''
-    Representation of game object ("long line")
+    Representation of game object (long line)
     '''
 
     def __init__(self, x, y):
@@ -157,7 +157,7 @@ class Shape2(Shape1):
 
 class Shape3(Shape1):
     '''
-    Representation of game object ("reverse L")
+    Representation of game object (reverse L)
     '''
 
     def __init__(self, x, y):
@@ -183,7 +183,7 @@ class Shape3(Shape1):
 
 class Shape4(Shape1):
     '''
-    Representation of game object ("L")
+    Representation of game object (L)
     '''
 
     def __init__(self, x, y):
@@ -209,7 +209,7 @@ class Shape4(Shape1):
 
 class Shape5(Shape1):
     '''
-    Representation of game object ("reverse Z")
+    Representation of game object (reverse Z)
     '''
 
     def __init__(self, x, y):
@@ -235,7 +235,7 @@ class Shape5(Shape1):
 
 class Shape6(Shape1):
     '''
-    Representation of game object ("Z")
+    Representation of game object (Z)
     '''
 
     def __init__(self, x, y):
@@ -261,7 +261,7 @@ class Shape6(Shape1):
 
 class Shape7(Shape1):
     '''
-    Representation of game object ("ship")
+    Representation of game object (ship)
     '''
 
     def __init__(self, x, y):

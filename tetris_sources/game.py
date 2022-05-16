@@ -23,7 +23,7 @@ class Game:
         self.counter = 0  # conter of cycles in game loop
         self.y_speed = const.Y_SPEED_DEMO  # determines, how often active object fall one block down
         self.screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT))  # main window of the game
-        pygame.display.set_caption("Tetris")
+        pygame.display.set_caption('Tetris')
         self.state = const.START  # state of game (START, GAME, GAME_OVER)
         self.clock = pygame.time.Clock()  # determines FPS
         self.texts = []  # array with all text labels on side banners
@@ -38,25 +38,25 @@ class Game:
         self.running = True  # determines wheater game is running
         self.center_x = (const.WIDTH - const.ER_WIDTH) // 2  # x-coordinate of box on start and ending screens
         self.center_y = (const.HEIGHT - const.ER_HEIGHT) // 2  # y-coordinate of box on start and ending screens
-        self.left_banner = ["SCORE", "LINES", "LEVEL"]  # texts displayed on the left banner
-        self.right_banner = ["FIRST", "SECOND", "THIRD"]  # texts displayed on the right banner
-        self.pause_text = text.Text("PAUSE", self.center_x, self.center_y, const.WHITE, self.screen,
+        self.left_banner = ['SCORE', 'LINES', 'LEVEL']  # texts displayed on the left banner
+        self.right_banner = ['FIRST', 'SECOND', 'THIRD']  # texts displayed on the right banner
+        self.pause_text = text.Text('PAUSE', self.center_x, self.center_y, const.WHITE, self.screen,
                                     const.ER_WIDTH, const.TEXT_SIZE, True)  # Header of the pause screen
-        self.study_phase = 0  # determines current state of "How to play"
+        self.study_phase = 0  # determines current state of 'How to play'
         self.keys = button.Keys(
             const.WIDTH // 2 - const.SQUARE//2, 3 * const.HEIGHT // 4, self.draw_key)  # part of animation - arrows
         self.animation_counter = 0  # counter controling animation behavior
         self.change = [False, 0]  # flag and counter controling animation behavior
-        self.help_text = text.Text("1/3", const.OFFSET, const.HEIGHT//2, const.BLACK, self.screen,
+        self.help_text = text.Text('1/3', const.OFFSET, const.HEIGHT//2, const.BLACK, self.screen,
                                    const.WIDTH - 2*const.OFFSET,
-                                   const.TEXT_SIZE, False)  # text which displays current state of "How to play"
-        self.infos = ["You can move with the falling object using right and left arrow - see the animation.",
-                      "You can rotate the falling object using up arraw - see the animation.",
-                      "You can speed up movement of the falling object using down arraw - see the "
-                      "animation."]  # texts for "How to play"
+                                   const.TEXT_SIZE, False)  # text which displays current state of 'How to play'
+        self.infos = ['You can move with the falling object using right and left arrow - see the animation.',
+                      'You can rotate the falling object using up arraw - see the animation.',
+                      'You can speed up movement of the falling object using down arraw - see the '
+                      'animation.']  # texts for 'How to play'
         self.help_info = text.Text(self.infos[self.study_phase], const.OFFSET, const.HEIGHT//2 + const.TEXT_SIZE,
                                    const.BLACK, self.screen, const.WIDTH - 2*const.OFFSET, const.TEXT_SIZE2,
-                                   False, False)  # displays currnt info in "How to play"
+                                   False, False)  # displays currnt info in 'How to play'
 
         # sets boundaries
         for i in range(18):
@@ -69,27 +69,27 @@ class Game:
         x_coor = (const.WIDTH - const.BUTTON_WIDTH) // 2
 
         self.play_button = button.Button(x_coor, self.center_y + 4*const.TEXT_SIZE, const.BUTTON_WIDTH,
-                                         const.BUTTON_HEIGHT, "PLAY", const.RED, const.BLUE, self.start)
+                                         const.BUTTON_HEIGHT, 'PLAY', const.RED, const.BLUE, self.start)
         self.help_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
-                                         const.BUTTON_HEIGHT, "HELP", const.RED, const.BLUE, self.help)
+                                         const.BUTTON_HEIGHT, 'HELP', const.RED, const.BLUE, self.help)
         self.retry_button = button.Button(x_coor, self.center_y + 6*const.TEXT_SIZE, const.BUTTON_WIDTH,
-                                          const.BUTTON_HEIGHT, "RETRY", const.RED, const.BLUE, self.retry)
+                                          const.BUTTON_HEIGHT, 'RETRY', const.RED, const.BLUE, self.retry)
         self.pause_button = button.Button((const.OFFSET-const.BUTTON_WIDTH) // 2,
                                           const.HEIGHT - const.BUTTON_HEIGHT - 10,
-                                          const.BUTTON_WIDTH, const.BUTTON_HEIGHT, "PAUSE", const.RED, const.BLUE,
+                                          const.BUTTON_WIDTH, const.BUTTON_HEIGHT, 'PAUSE', const.RED, const.BLUE,
                                           self.pause)
         self.resume_button = button.Button(x_coor, self.center_y + 4*const.TEXT_SIZE, const.BUTTON_WIDTH,
-                                           const.BUTTON_HEIGHT, "RESUME", const.RED, const.BLUE, self.resume)
+                                           const.BUTTON_HEIGHT, 'RESUME', const.RED, const.BLUE, self.resume)
         self.menu_button = button.Button(x_coor, self.center_y + 2*const.TEXT_SIZE, const.BUTTON_WIDTH,
-                                         const.BUTTON_HEIGHT, "MENU", const.RED, const.BLUE, self.menu)
+                                         const.BUTTON_HEIGHT, 'MENU', const.RED, const.BLUE, self.menu)
         self.prev_button = button.Button(const.OFFSET, const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
-                                         const.BUTTON_HEIGHT, "PREV", const.RED, const.BLUE, self.prev)
+                                         const.BUTTON_HEIGHT, 'PREV', const.RED, const.BLUE, self.prev)
         self.next_button = button.Button(const.WIDTH - const.OFFSET - const.BUTTON_WIDTH,
                                          const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
-                                         const.BUTTON_HEIGHT, "NEXT", const.RED, const.BLUE, self.next)
+                                         const.BUTTON_HEIGHT, 'NEXT', const.RED, const.BLUE, self.next)
         self.help_end_button = button.Button(const.WIDTH - const.OFFSET - const.BUTTON_WIDTH,
                                              const.HEIGHT - const.BUTTON_HEIGHT - 10, const.BUTTON_WIDTH,
-                                             const.BUTTON_HEIGHT, "MENU", const.RED, const.BLUE, self.menu)
+                                             const.BUTTON_HEIGHT, 'MENU', const.RED, const.BLUE, self.menu)
 
         # INITIALIZE ALL TEXTS
         # logo on starting screen
@@ -105,11 +105,11 @@ class Game:
                               const.BLACK, self.screen, const.OFFSET, const.TEXT_SIZE))
 
         # on ending screen
-        self.end_report.append(text.Text("GAME OVER", self.center_x, self.center_y, const.WHITE, self.screen,
+        self.end_report.append(text.Text('GAME OVER', self.center_x, self.center_y, const.WHITE, self.screen,
                                const.ER_WIDTH, const.TEXT_SIZE, True))
         for i in range(3):
             y_coor = self.center_y + (i+2)*const.TEXT_SIZE
-            self.end_report.append(text.Text("Final " + self.left_banner[i]+":" + str(self.scores[i]),
+            self.end_report.append(text.Text('Final ' + self.left_banner[i]+':' + str(self.scores[i]),
                                    self.center_x, y_coor, const.BLACK, self.screen,  const.ER_WIDTH, const.TEXT_SIZE))
 
     def start(self):
@@ -130,7 +130,7 @@ class Game:
         self.state = const.HELP
         self.animation_counter = 0
         self.study_phase = 0
-        self.help_text.set_text(str(self.study_phase+1) + "/3")
+        self.help_text.set_text(str(self.study_phase+1) + '/3')
         self.active = ob.Shape3(4, 0)
 
     def pause(self):
@@ -171,7 +171,7 @@ class Game:
         self.active.y = 0
         self.active.pos = 0
         self.keys.set_all_black()
-        self.help_text.set_text(str(self.study_phase+1) + "/3")
+        self.help_text.set_text(str(self.study_phase+1) + '/3')
         self.help_info.set_text(self.infos[self.study_phase])
 
     def next(self):
@@ -184,7 +184,7 @@ class Game:
         self.active.y = 0
         self.active.pos = 0
         self.keys.set_all_black()
-        self.help_text.set_text(str(self.study_phase+1) + "/3")
+        self.help_text.set_text(str(self.study_phase+1) + '/3')
         self.help_info.set_text(self.infos[self.study_phase])
 
     def retry(self):
@@ -228,7 +228,7 @@ class Game:
 
     def draw_key(self, x_cor, y_cor, color1, color2, ar):
         '''
-        Draws arrows for animation in "How to play"
+        Draws arrows for animation in 'How to play'
         '''
 
         pygame.draw.rect(self.screen, color1, (x_cor, y_cor, const.SQUARE, const.SQUARE))
@@ -280,7 +280,7 @@ class Game:
 
             self.play_button.draw(self.screen)
             self.help_button.draw(self.screen)
-        # draws layout for "How to play" state(HELP)
+        # draws layout for 'How to play' state(HELP)
         elif(self.state == const.HELP):
             pygame.draw.rect(self.screen, const.LIGHT_BLUE, (const.OFFSET, (const.HEIGHT//const.SQUARE)//2*const.SQUARE,
                              const.WIDTH - 2*const.OFFSET, const.HEIGHT))
@@ -404,7 +404,7 @@ class Game:
                     else:
                         self.next_button.active = False
 
-                    # check if "back to menu" button should become active
+                    # check if 'back to menu' button should become active
                     if(self.help_end_button.x <= event.pos[0] <= self.next_button.x + self.next_button.width
                        and self.help_end_button.y <= event.pos[1] <= self.help_end_button.y +
                        self.help_end_button.height):
@@ -437,7 +437,7 @@ class Game:
                 # check if next is pressed
                 elif(self.study_phase != 2 and self.next_button.active and self.state == const.HELP):
                     self.next_button.eventHandler()
-                # check if "back to menu" is pressed
+                # check if 'back to menu' is pressed
                 elif(self.study_phase == 2 and self.help_end_button.active and self.state == const.HELP):
                     self.help_end_button.eventHandler()
 
@@ -567,7 +567,7 @@ class Game:
         while(self.running):
             self.event_handler()
 
-            # animation in "How to play"
+            # animation in 'How to play'
             if(self.state == const.HELP):
                 # controls end of part of animation
                 if(self.change[0] and (self.animation_counter - self.change[1] == 15)):
@@ -578,7 +578,7 @@ class Game:
                 if(self.counter % self.y_speed == 0):
                     self.active.add_y(1)
 
-                # first "active event"
+                # first 'active event'
                 if(self.animation_counter == 2*self.y_speed):
                     self.change[0] = True
                     self.change[1] = self.animation_counter
@@ -593,7 +593,7 @@ class Game:
                         self.y_speed = const.Y_SPEED_FAST
                         self.keys.set_color(1, const.RED)
 
-                # second "active event"
+                # second 'active event'
                 if(self.animation_counter == 4*self.y_speed):
                     self.change[0] = True
                     self.change[1] = self.animation_counter
@@ -605,7 +605,7 @@ class Game:
                         self.active.pos = (self.active.pos + 1) % 4
                         self.keys.set_color(0, const.RED)
 
-                # third "active event"
+                # third 'active event'
                 if(self.animation_counter == 5*self.y_speed):
                     self.change[0] = True
                     self.change[1] = self.animation_counter
@@ -617,7 +617,7 @@ class Game:
                         self.active.pos = (self.active.pos + 1) % 4
                         self.keys.set_color(0, const.RED)
 
-                # fourth "active event"
+                # fourth 'active event'
                 if(self.animation_counter == 7*self.y_speed):
                     self.change[0] = True
                     self.change[1] = self.animation_counter
@@ -658,12 +658,12 @@ class Game:
 
                     # checking if game can continue + add new ocuppied blocks
                     if(not self.active.add_active_blocks(self.ocuppied)):
-                        self.texts[const.T_SCORE].set_text("")
-                        self.texts[const.T_LINES].set_text("")
-                        self.texts[const.T_LEVEL].set_text("")
+                        self.texts[const.T_SCORE].set_text('')
+                        self.texts[const.T_LINES].set_text('')
+                        self.texts[const.T_LEVEL].set_text('')
                         self.state = const.GAME_OVER
                         for i in range(1, 4):
-                            self.end_report[i].set_text("Final " + self.left_banner[i-1] + ":" + str(self.scores[i-1]))
+                            self.end_report[i].set_text('Final ' + self.left_banner[i-1] + ':' + str(self.scores[i-1]))
 
                         continue
 
