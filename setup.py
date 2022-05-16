@@ -16,4 +16,5 @@ setup(
     long_description=long_description,
     url='https://github.com/xsuran07/Tetris',
     packages=find_packages(),
+    package_data={'tetris_sources': ['fonts/*.ttf']},
 )

@@ -5,6 +5,7 @@ Implementation of class for displaying text.
 '''
 
 import pygame
+from pathlib import Path
 
 from . import constants as const
 
@@ -23,7 +24,7 @@ class Text:
         self.width = width
         self.box = box
         self.size = size
-        self.font = pygame.font.SysFont("ubuntumono", self.size)
+        self.font = pygame.font.Font(Path(__file__).parent / 'fonts' / 'UbuntuMono-Regular.ttf', self.size)
         self.center = center
 
     def draw(self):

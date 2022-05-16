@@ -5,6 +5,7 @@ Implementation of button.
 '''
 
 import pygame
+from pathlib import Path
 
 from . import constants as const
 
@@ -25,7 +26,7 @@ class Button:
         self.active = False
         self.handler = handler
         self.size = self.height - 20
-        self.font = pygame.font.SysFont('ubuntumono', self.size)
+        self.font = pygame.font.Font(Path(__file__).parent / 'fonts' / 'UbuntuMono-Regular.ttf', self.size)
 
     def draw(self, display):
         '''
