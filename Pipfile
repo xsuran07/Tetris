@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pygame = "*"
+tetris-sources = {path = "."}
 
 [dev-packages]
 

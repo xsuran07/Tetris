@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f44ff833cfe150ec6334e9312a1ea31fbe5035cb6cb3b6b8319b72070d41f9c5"
+            "sha256": "d4f29a4d7949677b30d3f5802ccd2ef37cf2e082d143736f1731faf93e04ecbc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -79,6 +79,10 @@
             ],
             "index": "pypi",
             "version": "==2.1.2"
+        },
+        "tetris-sources": {
+            "path": ".",
+            "version": "==0.1.0"
         }
     },
     "develop": {}
